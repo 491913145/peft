@@ -184,20 +184,17 @@ class LoraModel(torch.nn.Module):
                         lora_config.init_lora_weights,
                     )
                 else:
-                    if loaded_in_8bit and isinstance(target, bnb.nn.Linear8bitLt):
+                   if loaded_in_8bit and isinstance(target, bnb.nn.Linear8bitLt):
+                        kwargs.update(
+                            {
+                                "has_fp16_weights": target.state.has_fp16_weights,
+                                "memory_efficient_backward": target.state.memory_efficient_backward,
+                                "threshold": target.state.threshold,
+                                "index": target.index,
+                            }
+                        )
                         if self.peft_config.enable_lora is not None:
-                           warnings.warn(
-                               "loaded_in_8bit is set to True but it can't be use with enable_lora"
-                               "Setting enable_lora to None."
-                               "(Don't worry, LoRA is still enabled, just not separately trained.)"
-                           )
-                           self.peft_config.enable_lora = None
-                           if kwargs["fan_in_fan_out"]:
-                               warnings.warn(
-                                   "fan_in_fan_out is set to True but the target module is not a Conv1D. "
-                                   "Setting fan_in_fan_out to False."
-                               )
-                               kwargs["fan_in_fan_out"] = False
+                            kwargs.update({"enable_lora": self.peft_config.enable_lora})
                         kwargs.update(
                             {
                                 "has_fp16_weights": target.state.has_fp16_weights,
