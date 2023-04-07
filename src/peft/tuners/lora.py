@@ -185,7 +185,7 @@ class LoraModel(torch.nn.Module):
                     )
                 else:
                     if loaded_in_8bit and isinstance(target, bnb.nn.Linear8bitLt):
-                       if self.peft_config.enable_lora is not None
+                       if self.peft_config.enable_lora is not None:
                            warnings.warn(
                                "loaded_in_8bit is set to True but it can't be use with enable_lora"
                                "Setting enable_lora to None."
